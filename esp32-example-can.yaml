@@ -1,5 +1,5 @@
 # Version info, for full change log:- https://github.com/Uksa007/esphome-jk-bms-can/discussions/2
-# V1.13 fix array too small 
+# V1.13.1 Fix compile issues with new version of ESPhome 2023.4.0, set rebulk offset to 2.5
 substitutions:
 # --------------------------
 # name that will appear in esphome and homeassistant.
@@ -16,7 +16,7 @@ substitutions:
 # Absorption time in minutes to hold charge voltage after charge voltage is reached eg 30
   absorption_time: "30"
 # Rebulk offset, x Volts below absorption volatge battery will request rebulk, eg 55.2-3 = 52.5v, roughly 90% SOC.
-  rebulk_offset: "3"
+  rebulk_offset: "2.5"
 # --------------------------------------
 # Battery Discharge setting:
 # Max discharge amps eg 100, should be at least 10A less than BMS over dischange current protection, 0.5C max
@@ -48,9 +48,9 @@ esphome:
 
 esp32:
   board: esp32doit-devkit-v1
-  framework:
-    type: esp-idf
-    version: latest
+#  framework:
+#    type: esp-idf
+#    version: latest
 
 external_components:
   - source: ${external_components_source}
@@ -104,7 +104,7 @@ light:
     internal: true
 
 uart:
-  id: uart0
+  id: uart_0
   baud_rate: 115200
   rx_buffer_size: 384
   tx_pin: ${tx_pin}
@@ -112,7 +112,7 @@ uart:
 
 jk_modbus:
   id: modbus0
-  uart_id: uart0
+  uart_id: uart_0
 
 jk_bms:
   id: bms0
