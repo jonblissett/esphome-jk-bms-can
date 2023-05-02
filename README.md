@@ -12,6 +12,8 @@ Note Pylontech uses 15s/48v Goodwe uses 16s/51.2v @3.2v/cell nominal.
 Other battery profiles that utilise the pylonton/goodwe protocol with differnt cell counts may also work, eg Alpha Ess Smile, BYD Battery-Box LV Flex Lite 
 Select the correct battery profile in the inverter to match your battery pack!
 
+**New: Plug and play Hardware interface see [here for more info](https://github.com/Uksa007/esphome-jk-bms-can/discussions/16)**
+
 The ESP32 communicates with the JK-BMS using the RS485 port(GPS) which is in fact not RS485, it is 3.3V TTL so it can be directly connected to the ESP32.
 The ESP32 then sends the required CAN bus data to the inverter via a TJA1050 CAN bus transceiver.
 
@@ -76,8 +78,9 @@ If you would like to test without inverter connected, only the [beta version wil
 Inverters supporting CAN Pylon/Goodwe Low Voltage protocol should work, check your inverter manual to confirm.
 
 The following are confirmed and known to work:
-* Deye 5k-sg03lp1-eu [@vdiex](https://github.com/Uksa007/esphome-jk-bms-can/discussions/1#discussioncomment-4481364))
-* Goodwe GW5000S-BP (reported by @Uksa007 using the "Goodwe LX U5.4-L * 3" battery profile)
+* Deye 5k-sg03lp1-eu  (reported by [@vdiex](https://github.com/Uksa007/esphome-jk-bms-can/discussions/1#discussioncomment-4481364))
+* Goodwe 3648-ES (GW5048-ES) (reported by [@jirdol](https://github.com/Uksa007/esphome-jk-bms-can/discussions/1#discussioncomment-5498743))
+* Goodwe GW5000S-BP (reported by [@Uksa007](https://github.com/Uksa007/esphome-jk-bms-can/discussions/2#discussion-4469605) using the "Goodwe LX U5.4-L * 3" battery profile)
 * Sofar solar me3000sp (reported by [@starman](https://diysolarforum.com/threads/jk-bms-can-bus-comms-now-possible-for-inverters-that-support-goodwe-and-pylontech-batteries.48963/post-755539))
 * Turbo energy (reported by [@ibikku](https://github.com/Uksa007/esphome-jk-bms-can/discussions/13#discussion-4823950))
 
