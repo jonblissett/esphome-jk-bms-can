@@ -217,13 +217,13 @@ interval:
                can_mesg[3] = uint16_t(id(charging_current).state * 10) >> 8 & 0xff;
             } else {
                can_mesg[0] = uint16_t((id(charging_voltage).state - ${rebulk_offset}) * 10) & 0xff;
-               can_mesg[1] = uint16_t((id(charging_voltage).state - ${rebulk_offset}) * 10) >> 8 & 0xff
+               can_mesg[1] = uint16_t((id(charging_voltage).state - ${rebulk_offset}) * 10) >> 8 & 0xff;
                can_mesg[2] = 0;
                can_mesg[3] = 0;
             }
             if ((!id(charging_switch).state) | (!id(inverter_charging).state)) { // Overides to disable charging
                can_mesg[0] = uint16_t((id(charging_voltage).state - ${rebulk_offset}) * 10) & 0xff;
-               can_mesg[1] = uint16_t((id(charging_voltage).state - ${rebulk_offset}) * 10) >> 8 & 0xff
+               can_mesg[1] = uint16_t((id(charging_voltage).state - ${rebulk_offset}) * 10) >> 8 & 0xff;
                can_mesg[2] = 0;
                can_mesg[3] = 0;
             }
