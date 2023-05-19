@@ -131,24 +131,24 @@ The following are confirmed and known to work:
 
 ```
                 RS485-TTL                   RS232-TTL                CAN BUS
-┌──────────┐                ┌─────────┐                ┌─────────┐              ┌──────────┐
-│          │<----- TX ----->│         │<----- TX ----->|         |              |          |
-│  JK-BMS  │<----- RX ----->│  ESP32  │<-4K7- RX ----->| TJA1050 |<---CAN H --->| Inverter |
-│          │<----- GND ---->│         │<----- GND ---->|   CAN   |<---CAN L --->|          |
-│          │      3.3V ---->│         │<----- 5V ----->|         |              |          |
-└──────────┘                └─────────┘                └─────────┘              └──────────┘
+┌──────────┐            ┌─────────┐             ┌─────────┐              ┌──────────┐
+│          │<TX------RX>│16     23│<TX-------TX>|         |              |          |
+│  JK-BMS  │<RX------TX>│17     22│<RX--4K7--RX>| TJA1050 |<---CAN H --->| Inverter |
+│          │<----GND--->│         │<----GND---->|   CAN   |<---CAN L --->|          |
+│          │  3.3V ---->│  ESP32  │<----5V----->|         |              |          |
+└──────────┘            └─────────┘             └─────────┘              └──────────┘
 
 
 
-Optional, as seen in pic above: RS485 between JK-BMS and ESP32, uses JK RS485 adaptor and RS485 to TTL3.3v adaptor.
+Optional below, as seen in pic above: RS485 between JK-BMS GPS port and ESP32, uses JK RS485 adaptor and RS485 to TTL3.3v adaptor.
 
-              RS485-TTL                RS485                RS485-TTL                RS232-TTL                 CAN BUS
-┌──────────┐            ┌─────────┐            ┌─────────┐            ┌─────────┐              ┌─────────┐              ┌──────────┐
-│          │<--- TX --->│    JK   │<--- TX --->│         │<--- TX --->│         │<----- TX --->|         |              |          |
-│  JK-BMS  │<--- RX --->│  RS485  │<--- RX --->│  RS485  │<--- RX --->│  ESP32  │<-4K7- RX --->| TJA1050 |<---CAN H --->| Inverter |
-│          │<--- GND -->│ Adaptor │<--- GND -->│ To 3.3V │<--- GND -->|         |<----- GND -->|   CAN   |<---CAN L --->|          |
-│          │<--Bat V -->│         │            │         │<--- 3.3V-->|         |<----- 5V --->|         |              |          |
-└──────────┘            └─────────┘            └─────────┘            └─────────┘              └─────────┘              └──────────┘
+              RS485-TTL                  RS485             RS485-TTL               RS232-TTL                CAN BUS
+┌──────────┐            ┌───────────┐           ┌────────┐           ┌─────────┐             ┌─────────┐              ┌──────────┐
+│          │<--- TX --->│Y    JK   Y│<A------A+>│        │<TX-----RX>│16     23│<TX-------TX>|         |              |          |
+│  JK-BMS  │<--- RX --->│W  RS485  W│<B------B->│ RS485  │<RX-----TX>│17     22│<RX--4K7--RX>| TJA1050 |<---CAN H --->| Inverter |
+│          │<--- GND -->│B Adaptor B│<---GND--->│To 3.3V │<---GND--->|         |<----GND---->|   CAN   |<---CAN L --->|          |
+│          │<--Bat V -->│R          │           │        │<---3.3V-->|  ESP32  |<----5V----->|         |              |          |
+└──────────┘            └───────────┘           └────────┘           └─────────┘             └─────────┘              └──────────┘
 
 
 
@@ -159,8 +159,8 @@ Optional, as seen in pic above: RS485 between JK-BMS and ESP32, uses JK RS485 ad
 │GND  RX  TX VBAT│ 
 └────────────────┘
   │   │   │   | VBAT is full battery volatge eg 51.2V (No connect)
-  │   │   └──── GPIO16 (`rx_pin`)
-  │   └──────── GPIO17 (`tx_pin`)
+  │   │   └──── ESP32 GPIO16 (`rx_pin`)
+  │   └──────── ESP32 GPIO17 (`tx_pin`)
   └──────────── GND
 ```
 
