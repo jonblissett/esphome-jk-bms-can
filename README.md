@@ -123,9 +123,18 @@ The following are confirmed and known to work:
 * Optional: JK RS485 Adaptor and RS484 to TTL3.3v Adaptor (see optional schematic below)
 
 ## Schematics
+I have designed and build a [Hardware interface baord](https://github.com/Uksa007/esphome-jk-bms-can/discussions/16) pictured below on the left.
+This has all the hardware needed to communicate with BMS and Inverter over CAN bus.
+It is a plug and play device, just add power (5v USB)
+Hand built on a PCB and soldered to the ESP32, bulletproof design for production use.
+Don't use modules and Dupont connectors for long term production use, they are for proof of concept and prototyping only, and are prone to fail.
+Update: now available with two RJ45 with Termination disabled for Multi BMS 
 
+
+<a href="https://raw.githubusercontent.com/uksa007/esphome-jk-bms-can/main/images/interfacekit.jpg" target="_blank">
+<img src="https://raw.githubusercontent.com/uksa007/esphome-jk-bms-can/main/images/interfacekit.jpg" width="33%">
 <a href="https://raw.githubusercontent.com/uksa007/esphome-jk-bms-can/main/images/esp32.jpg" target="_blank">
-<img src="https://raw.githubusercontent.com/uksa007/esphome-jk-bms-can/main/images/esp32.jpg" width="50%">
+<img src="https://raw.githubusercontent.com/uksa007/esphome-jk-bms-can/main/images/esp32.jpg" width="33%">
 </a>
 
 
