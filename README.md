@@ -30,8 +30,9 @@ Sends over CAN bus to inverter:
   - Alarms: Cell over/under voltage, Charge/discharge over current, High/low Temp, BMS fault
   - Charging logic: Complete rework of the charging logic, now charges with constant current(CC) to the absorption voltage, then has an absorption timer (Constant Voltage, user configurable time), with rebulk feature (user configurable offset from absorption voltage).
   
-Note:- Support for only one BMS CAN connection per inverter, see here for more info on creating [larger capacity packs](https://github.com/Uksa007/esphome-jk-bms-can/discussions/1#discussioncomment-4359340)<br>
-Early stages are under way to support multiple BMS, but need funding to purchase additional hardware, please consider supporting me if you would like to see this functionally, early access code with be made available in the Alpha testers membership once funding goals are reached: https://www.patreon.com/Uksa007Codedevelopment
+Note:- The standard code support one BMS connection per inverter.
+Multi BMS support availabe for [Alpha testers](https://github.com/Uksa007/esphome-jk-bms-can/discussions/20)<br>
+Early stages are under way to support multiple BMS, but need funding to purchase additional hardware, please consider supporting me if you would like to see this functionally, early access code with be made available in the Alpha testers: https://www.patreon.com/Uksa007Codedevelopment
 
 NOTE: ESP32 has a bug that causes WDT reboot if no other devices on CAN bus to ACK the packets.
 If you try to run without inverter it will not work as it will constantly WDT reboot!
