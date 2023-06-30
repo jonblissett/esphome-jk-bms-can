@@ -1,5 +1,7 @@
 # Version info, for full change log:- https://github.com/Uksa007/esphome-jk-bms-can/discussions/2
-# V1.13 fix array too small 
+# V1.13.3 Improve compatibility with Deye and other inverters
+# V1.13.2 Send Max Temperature of T1, T2 to inverter
+# V1.13.1 Fix compile issues with new version of ESPhome 2023.4.0, set rebulk offset to 2.5
 substitutions:
 # --------------------------
 # name that will appear in esphome and homeassistant.
@@ -16,7 +18,7 @@ substitutions:
 # Absorption time in minutes to hold charge voltage after charge voltage is reached eg 30
   absorption_time: "30"
 # Rebulk offset, x Volts below absorption volatge battery will request rebulk, eg 55.2-3 = 52.5v, roughly 90% SOC.
-  rebulk_offset: "3"
+  rebulk_offset: "2.5"
 # --------------------------------------
 # Battery Discharge setting:
 # Max discharge amps eg 100, should be at least 10A less than BMS over dischange current protection, 0.5C max
@@ -48,8 +50,8 @@ esphome:
 
 esp32:
   board: esp32doit-devkit-v1
-  framework:
-    type: esp-idf
+#  framework:
+#    type: esp-idf
 #    version: latest
 
 external_components:
@@ -104,7 +106,7 @@ light:
     internal: true
 
 uart:
-  id: uart0
+  id: uart_0
   baud_rate: 115200
   rx_buffer_size: 384
   tx_pin: ${tx_pin}
@@ -112,7 +114,7 @@ uart:
 
 jk_modbus:
   id: modbus0
-  uart_id: uart0
+  uart_id: uart_0
 
 jk_bms:
   id: bms0
@@ -144,39 +146,39 @@ interval:
             uint8_t can_mesg[] = {0, 0, 0, 0, 0, 0, 0, 0};
             uint16_t jk_errormask = id(errors_bitmask).state;
             int batt_mods = ${batt_modules};
-            /// Alarms
-            if ((jk_errormask & 0x04) | (jk_errormask & 0x80) | (jk_errormask & 0x400)) { /// Hight.Voltage.Alarm JK bit 2,7,10 
-               can_mesg[0] = 0x02; /// bit 1
+            // Alarms
+            if ((jk_errormask & 0x04) | (jk_errormask & 0x80) | (jk_errormask & 0x400)) { // Hight.Voltage.Alarm JK bit 2,7,10 
+               can_mesg[0] = 0x02; // bit 1
             }
-            if ((jk_errormask & 0x08) | (jk_errormask & 0x800)) { ///Low.Voltage.Alarm JK bit 3,11 
-               can_mesg[0] = can_mesg[0] | 0x04; /// bit 2
+            if ((jk_errormask & 0x08) | (jk_errormask & 0x800)) { // Low.Voltage.Alarm JK bit 3,11 
+               can_mesg[0] = can_mesg[0] | 0x04; // bit 2
             }
-            if ((jk_errormask & 0x02) | (jk_errormask & 0x10) | (jk_errormask & 0x100)) { //Hight.Temp.Alarm JK bit 1,4,8
-               can_mesg[0] = can_mesg[0] | 0x08; /// bit 3
+            if ((jk_errormask & 0x02) | (jk_errormask & 0x10) | (jk_errormask & 0x100)) { // Hight.Temp.Alarm JK bit 1,4,8
+               can_mesg[0] = can_mesg[0] | 0x08; // bit 3
             }
-            if (jk_errormask & 0x200) { ///Low.Temp.Alarm JK bit 9
-               can_mesg[0] = can_mesg[0] | 0x10; /// bit 4
+            if (jk_errormask & 0x200) { // Low.Temp.Alarm JK bit 9
+               can_mesg[0] = can_mesg[0] | 0x10; // bit 4
             }
-            if (jk_errormask & 0x40) { ///Discharge.Over.Current JK bit 6
-               can_mesg[0] = can_mesg[0] | 0x80; /// bit 7
+            if (jk_errormask & 0x40) { // Discharge.Over.Current JK bit 6
+               can_mesg[0] = can_mesg[0] | 0x80; // bit 7
             }
-            if (jk_errormask & 0x20) { ///Charge.Over.Current JK bit 5
-               can_mesg[1] = 0x01; /// bit 0
+            if (jk_errormask & 0x20) { // Charge.Over.Current JK bit 5
+               can_mesg[1] = 0x01; // bit 0
             }
-            if ((jk_errormask & 0x1000) | (jk_errormask & 0x2000)) { /// BMS Internal JK bit 12,13
-               can_mesg[1] = can_mesg[1] | 0x08; /// bit 3
+            if ((jk_errormask & 0x1000) | (jk_errormask & 0x2000)) { // BMS Internal JK bit 12,13
+               can_mesg[1] = can_mesg[1] | 0x08; // bit 3
             }
-            if (jk_errormask & 0x80) { /// Cell Imbalance JK bit 7
-               can_mesg[1] = can_mesg[1] | 0x10; /// bit 4 
+            if (jk_errormask & 0x80) { // Cell Imbalance JK bit 7
+               can_mesg[1] = can_mesg[1] | 0x10; // bit 4 
             }
             /// Warnings
             can_mesg[2] = 0x00;
-            can_mesg[3] = 0x00; /// test
+            can_mesg[3] = 0x00;
             /// Flags
-            can_mesg[4] = batt_mods; ///Module in parallel
+            can_mesg[4] = batt_mods; // Module in parallel
             can_mesg[5] = 0x00;
             can_mesg[6] = 0x00;
-            can_mesg[7] = 0x00; ///DIP switches 1,3 10000100 0x84
+            can_mesg[7] = 0x00; // DIP switches 1,3 10000100 0x84
             ESP_LOGI("main", "send can id: 0x359 hex: %x %x %x %x %x %x %x %x", can_mesg[0], can_mesg[1], can_mesg[2], can_mesg[3], can_mesg[4], can_mesg[5], can_mesg[6], can_mesg[7]);
             return {can_mesg[0], can_mesg[1], can_mesg[2], can_mesg[3], can_mesg[4], can_mesg[5], can_mesg[6], can_mesg[7]};
       - delay: 10ms
@@ -193,14 +195,14 @@ interval:
                id(charge_status) = "Wait";
             } else if ((!id(inverter_chg_on).state) & (id(charge_status) == "Bulk Manually")) {
                id(charge_status) = "Wait";
-            } else if (id(total_voltage).state <= (id(charging_voltage).state - ${rebulk_offset})) { ///Bulk Charge eg 53.6v 10% 
+            } else if (id(total_voltage).state <= (id(charging_voltage).state - ${rebulk_offset})) { // Bulk Charge eg 53.6v 10% 
                 if (id(absorption_script).is_running()) id(absorption_script).stop();
                 id(charge_status) = "Bulk";
-            } else if ((id(total_voltage).state > (id(charging_voltage).state - ${rebulk_offset})) & (id(total_voltage).state < (id(charging_voltage).state - 0.05))) { ///If in startup rebulk
+            } else if ((id(total_voltage).state > (id(charging_voltage).state - ${rebulk_offset})) & (id(total_voltage).state < (id(charging_voltage).state - 0.05))) { // If in startup rebulk
                      if (id(charge_status) == "Startup") {
-                        id(charge_status) = "Bulk"; /// If in startup, 10% low rebulk
+                        id(charge_status) = "Bulk"; // If in startup, 10% low rebulk
                      }
-            } else if (id(total_voltage).state >= (id(charging_voltage).state  - 0.05)) { ///10 % from top start absorption timer
+            } else if (id(total_voltage).state >= (id(charging_voltage).state  - 0.05)) { // 10 % from top start absorption timer
                      if (id(charge_status) == "Bulk") {
                         id(charge_status) = "Absorption";
                         if (!id(absorption_script).is_running()) id(absorption_script).execute();
@@ -214,14 +216,14 @@ interval:
                can_mesg[2] = uint16_t(id(charging_current).state * 10) & 0xff;
                can_mesg[3] = uint16_t(id(charging_current).state * 10) >> 8 & 0xff;
             } else {
-               can_mesg[0] = 0;
-               can_mesg[1] = 0;
+               can_mesg[0] = uint16_t((id(charging_voltage).state - ${rebulk_offset}) * 10) & 0xff;
+               can_mesg[1] = uint16_t((id(charging_voltage).state - ${rebulk_offset}) * 10) >> 8 & 0xff;
                can_mesg[2] = 0;
                can_mesg[3] = 0;
             }
-            if ((!id(charging_switch).state) | (!id(inverter_charging).state)) { /// Overides to disable charging
-               can_mesg[0] = 0;
-               can_mesg[1] = 0;
+            if ((!id(charging_switch).state) | (!id(inverter_charging).state)) { // Overides to disable charging
+               can_mesg[0] = uint16_t((id(charging_voltage).state - ${rebulk_offset}) * 10) & 0xff;
+               can_mesg[1] = uint16_t((id(charging_voltage).state - ${rebulk_offset}) * 10) >> 8 & 0xff;
                can_mesg[2] = 0;
                can_mesg[3] = 0;
             }
@@ -245,8 +247,8 @@ interval:
           data: !lambda |-
             int soh = round(((id(charging_cycles).state/${max_cycles})-1)*-100);
             uint8_t can_mesg[3];
-            can_mesg[0] = uint16_t(id(capacity_remaining).state) & 0xff; /// 15 & 0xff; 
-            can_mesg[1] = uint16_t(id(capacity_remaining).state) >> 8 & 0xff; /// 15 >> 8 & 0xff; 
+            can_mesg[0] = uint16_t(id(capacity_remaining).state) & 0xff;
+            can_mesg[1] = uint16_t(id(capacity_remaining).state) >> 8 & 0xff;
             can_mesg[2] = soh & 0xff;
             can_mesg[3] = soh >> 8 & 0xff;
             ESP_LOGI("main", "send can id: 0x355 hex: %x %x %x %x", can_mesg[0], can_mesg[1], can_mesg[2], can_mesg[3]);
@@ -257,12 +259,12 @@ interval:
           can_id: 0x356
           data: !lambda |-
             uint8_t can_mesg[5];
-            can_mesg[0] = uint16_t(id(total_voltage).state * 100) & 0xff; 
+            can_mesg[0] = uint16_t(id(total_voltage).state * 100) & 0xff;
             can_mesg[1] = uint16_t(id(total_voltage).state * 100) >> 8 & 0xff;
             can_mesg[2] = int16_t(id(current).state * 10) & 0xff;
-            can_mesg[3] = int16_t(id(current).state * 10) >> 8 & 0xff; 
-            can_mesg[4] = int16_t(id(power_tube_temperature).state * 10) & 0xff;
-            can_mesg[5] = int16_t(id(power_tube_temperature).state * 10) >> 8 & 0xff;
+            can_mesg[3] = int16_t(id(current).state * 10) >> 8 & 0xff;
+            can_mesg[4] = int16_t(max(id(temperature_sensor_1).state, id(temperature_sensor_2).state)* 10) & 0xff;
+            can_mesg[5] = int16_t(max(id(temperature_sensor_1).state, id(temperature_sensor_2).state)* 10) >> 8 & 0xff;
             ESP_LOGI("main", "send can id: 0x356 hex: %x %x %x %x %x %x", can_mesg[0], can_mesg[1], can_mesg[2], can_mesg[3], can_mesg[4], can_mesg[5]);
             return {can_mesg[0], can_mesg[1], can_mesg[2], can_mesg[3], can_mesg[4], can_mesg[5]};
       - delay: 10ms
@@ -325,7 +327,7 @@ interval:
 
       - lambda: |- # Detect no CAN reply
            if (id(can_305_rx) > 30) {
-             ESP_LOGI("main", "No rx can 0x305 reply. Rebooting...");
+             ESP_LOGI("main", "No rx can 0x305 reply, Inverter not connected/responding, Rebooting...");
              id(restart_button).press();
            } else {
              id(can_305_rx) ++;
