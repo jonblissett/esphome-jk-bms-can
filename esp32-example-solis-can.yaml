@@ -39,7 +39,7 @@ substitutions:
   rx_pin: GPIO16
 # --------------------------------------
 #### Don't make changes below this ####
-  external_components_source: github://uksa007/esphome-jk-bms-can@main
+  external_components_source: github://jonblissett/esphome-jk-bms-can@main
 
 esphome:
   name: ${name}
@@ -629,3 +629,8 @@ switch:
     name: ${name} Charging manually (top bal)
     id: inverter_chg_on
     optimistic: true
+  - platform: gpio
+    name: ${name} Heater relay
+    pin: GPIO19
+    inverted: false
+    restore_mode: RESTORE_DEFAULT_OFF
