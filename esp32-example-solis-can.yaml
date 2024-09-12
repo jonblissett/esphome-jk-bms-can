@@ -228,8 +228,8 @@ interval:
                can_mesg[3] = 0;
             }
             if ((id(discharging_switch).state) & (id(inverter_discharging).state)) {
-              can_mesg[4] = uint16_t(${discharge_a} * 10) & 0xff;
-              can_mesg[5] = uint16_t(${discharge_a} * 10) >> 8 & 0xff;
+              can_mesg[4] = uint16_t(id(discharging_current).state * 10) & 0xff;
+              can_mesg[5] = uint16_t(id(discharging_current).state * 10) >> 8 & 0xff;
             } else {
                can_mesg[4] = 0x00;
                can_mesg[5] = 0x00;
@@ -605,6 +605,17 @@ number:
     max_value: 100
     mode: slider
     initial_value: "${charge_a}"
+    unit_of_measurement: A
+    icon: mdi:current-dc
+    optimistic: true
+  - platform: template
+    name: "${name} Discharge current max"
+    id: "discharging_current"
+    step: 1
+    min_value: 0
+    max_value: 100
+    mode: slider
+    initial_value: "${discharge_a}"
     unit_of_measurement: A
     icon: mdi:current-dc
     optimistic: true
